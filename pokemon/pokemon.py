@@ -1,4 +1,6 @@
 import requests
+from decouple import config
+from pymongo import MongoClient
 
 
 def get_pokemon_types(name: str) -> list:
@@ -43,3 +45,20 @@ def get_evolution_line(name: str) -> list:
     family = r.json()[0]["family"]
     evolution_line = family["evolutionLine"]
     return evolution_line
+
+
+def insert_pokemon_in_database(name: str) -> str:
+    host = config("HOST", default="localhost")
+    port = config("PORT", default="27027")
+    username = config("MONGO_INITDB_ROOT_USERNAME")
+    password = config("MONGO_INITDB_ROOT_PASSWORD")
+    local_client = MongoClient(
+        host="mongodb://localhost:27017", username="teste", password="teste"
+    )
+    try:
+        pokemon_types = get_pokemon_types(name=name)
+        dict_value = {"name": name, "types": pokemon_types}
+        local_client["pokemons"]["pokemon_info"].insert_one(dict_value)
+        return f"Pokemon {name} has been inserted successfully!"
+    except Exception as e:
+        return f"An exception has been occured: {e}"
