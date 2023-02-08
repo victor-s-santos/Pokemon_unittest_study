@@ -8,7 +8,7 @@ from pokemon import (
 )
 
 
-class TestPokemonFormat(unittest.TestCase):
+class TestPokemon(unittest.TestCase):
     def setUp(self):
         self.pikachu = "pikachu"
         self.expected_list_types = [
@@ -50,7 +50,10 @@ class TestPokemonFormat(unittest.TestCase):
     def test_insert_pokemon_in_database(self):
         """Must return a string instance."""
         insert_pokemon_in_database_obj = insert_pokemon_in_database(self.pikachu)
-        self.assertIsInstance(insert_pokemon_in_database_obj, str)
+        self.assertEqual(
+            insert_pokemon_in_database_obj,
+            f"Pokemon {self.pikachu} has been inserted successfully!",
+        )
 
 
 if __name__ == "__main__":
