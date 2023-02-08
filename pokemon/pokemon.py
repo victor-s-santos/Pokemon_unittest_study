@@ -1,6 +1,13 @@
+import argparse
 import requests
+import logging
 from decouple import config
 from pymongo import MongoClient
+
+logging.basicConfig(
+    format="%(asctime)s - %(pathname)s:%(lineno)d - %(levelname)s - %(message)s",
+    level=logging.DEBUG,
+)
 
 
 def get_pokemon_types(name: str) -> list:
@@ -62,3 +69,16 @@ def insert_pokemon_in_database(name: str) -> str:
         return f"Pokemon {name} has been inserted successfully!"
     except Exception as e:
         return f"An exception has been occured: {e}"
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(prog="migrate_collection_users_to_cons_consumers")
+    parser.add_argument("-n", "--name", required=True, help="pokemon_name")
+    args = parser.parse_args()
+    logging.info(f"Inserting Pokemon {args.name} to Database...")
+
+    try:
+        insert_pokemon_in_database(name=args.name)
+        logging.info(f"The Pokemon {args.name} has been inserted into database!")
+    except Exception as e:
+        logging.error(f"An exception has been occured: {e}")
