@@ -1,11 +1,6 @@
 import unittest
-from pokemon import (
-    get_pokemon_types,
-    get_evolution_line,
-    get_amount_of_pokemons_same_gen,
-    get_evolution_line,
-    insert_pokemon_in_database,
-)
+from unittest.mock import MagicMock
+from pokemon import Pokemon
 
 
 class TestPokemon(unittest.TestCase):
@@ -31,29 +26,35 @@ class TestPokemon(unittest.TestCase):
             "Steel",
             "Water",
         ]
+        self.pokemon = Pokemon(name=self.pikachu)
 
-    def test_get_pokemon_types_format(self):
+    @unittest.mock.patch(
+        "pokemon.Pokemon.get_requests_pokemon_info",
+        return_value=[{"name": "Pikachu", "types": ["Eletric"]}],
+    )
+    def test_get_pokemon_types_format(self, mocked_request: MagicMock()):
         """Must return a list instance."""
-        list_types = get_pokemon_types(self.pikachu)
+        list_types = self.pokemon.get_pokemon_types()
         self.assertIsInstance(list_types, list)
 
-    def test_get_amount_of_pokemons_same_gen_format(self):
-        """Must return a int instance."""
-        amount_of_pokemons = get_amount_of_pokemons_same_gen(self.pikachu)
-        self.assertIsInstance(amount_of_pokemons, int)
+    @unittest.mock.patch(
+        "pokemon.Pokemon.get_requests_pokemon_info",
+        return_value=[{"name": "Pikachu", "types": ["Eletric"]}],
+    )
+    def test_full_return_get_pokemon_types(self, mocked_request: MagicMock()):
+        list_types = self.pokemon.get_pokemon_types()
+        self.assertEqual(list_types, ["Eletric"])
 
-    def test_get_evolution_line_format(self):
-        """Must return a list instance."""
-        evolution_line = get_evolution_line(self.pikachu)
-        self.assertIsInstance(evolution_line, list)
-
-    def test_insert_pokemon_in_database(self):
-        """Must return a string instance."""
-        insert_pokemon_in_database_obj = insert_pokemon_in_database(self.pikachu)
-        self.assertEqual(
-            insert_pokemon_in_database_obj,
-            f"Pokemon {self.pikachu} has been inserted successfully!",
-        )
+    @unittest.mock.patch(
+        "pokemon.Pokemon.get_requests_pokemon_info",
+        return_value=[{"name": "Pikachu", "gen": 1}],
+    )
+    @unittest.mock.patch("pokemon.Pokemon.get_number_of_gen", return_value=1)
+    def test_full_return_of_get_amount_of_pokemons_same_gen(
+        self, mocked_pokemon_info: MagicMock(), mocked_pokemon_count: MagicMock()
+    ):
+        numer_pokemons_same_gen = self.pokemon.get_amount_of_pokemons_same_gen()
+        self.assertEqual(numer_pokemons_same_gen, 151)
 
 
 if __name__ == "__main__":
